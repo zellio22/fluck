@@ -1,0 +1,33 @@
+const uint8_t PINIrTx = 7;//PD7
+const uint8_t PINSerialTX = 1; //PD1
+const byte interruptPinIrRx = 3;//PD3 INT1
+const byte interruptPinRX = 2; //PD2 INT0
+
+void setup() {
+  pinMode(PINSerialTX, OUTPUT);
+  pinMode(interruptPinIrRx, INPUT_PULLUP);
+  attachInterrupt(1, sendTX, FALLING);
+  pinMode(PINIrTx, OUTPUT);
+  pinMode(interruptPinRX, INPUT_PULLUP);
+  attachInterrupt(0, sendIr, FALLING);
+}
+
+void loop() {
+  PORTD |= _BV(PD1);
+}
+
+void sendTX() {
+  PORTD &= ~_BV(PD1); //go LOW on pin 1(TX)
+  delayMicroseconds(105);
+  PIND = _BV(PD1); //toggle pin 1
+}
+
+void sendIr() {
+  delayMicroseconds(46);
+  while ((PIND & (1<<PD2))==0){ //while interruptPinRX is LOW, output 20us pulses
+    PORTD |= _BV(PD7); //go HIGH on pin 7 (IR diode)
+    delayMicroseconds(20);
+    PIND = _BV(PD7);  // go LOW (toggle pin) on pin 7 (IR diode)
+    delayMicroseconds(85);
+  }
+}
