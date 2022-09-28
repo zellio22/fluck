@@ -1,0 +1,34 @@
+#include "DigitalIO.h"
+const uint8_t interruptPinIrRx = 3;
+const uint8_t interruptPinRX = 2;
+const uint8_t PINIrTx = 7;
+const uint8_t PINSerialTX = 1;
+
+void setup() {
+  fastPinMode(PINSerialTX, OUTPUT);
+  fastDigitalWrite(PINSerialTX, HIGH);
+  pinMode(interruptPinIrRx, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPinIrRx), sendTX, FALLING);
+  fastPinMode(PINIrTx, OUTPUT);
+  pinMode(interruptPinRX, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPinRX), sendIr, FALLING);
+}
+
+void sendTX() {
+  fastDigitalWrite(PINSerialTX, LOW);
+  delayMicroseconds(105);
+  fastDigitalToggle(PINSerialTX);
+}
+
+void sendIr() {
+  delayMicroseconds(46);
+  while (digitalRead(2)==LOW){
+    fastDigitalWrite(PINIrTx, HIGH);
+    delayMicroseconds(20);
+    fastDigitalToggle(PINIrTx);
+    delayMicroseconds(85);
+  }
+}
+
+void loop() {
+}
