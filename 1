@@ -1,0 +1,58 @@
+#include "DigitalIO.h"
+const uint8_t PIN = 5;
+const uint8_t PINTX = 9;
+const byte interruptPin = 3;
+
+int bitsD[10] = {0,0,0,1,0,0,0,1,0,1};
+int bitsS[10] = {0,1,1,0,0,1,0,1,0,1};
+int bitsI[10] = {0,1,0,0,1,0,0,1,0,1};//0100 1001
+int bitsCR[10] = {0,1,0,1,1,0,0,0,0,1};
+
+
+
+void setup() {
+  fastPinMode(PIN, OUTPUT);
+  fastPinMode(PINTX, OUTPUT);
+  pinMode(interruptPin, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptPin), sendTX, FALLING);
+}
+
+void loop() {
+  fastDigitalWrite(PIN, LOW);
+ 
+  int i;
+  for (i = 0; i < 10; i++) {
+    if (bitsI[i]==0) { zero(); }
+    else { one(); }
+  }
+  /*for (i = 0; i < 10; i++) {
+    if (bitsS[i]==0) { zero(); }
+    else { one(); }
+  }*/
+  for (i = 0; i < 10; i++) {
+    if (bitsD[i]==0) { zero(); }
+    else { one(); }
+  }
+  for (i = 0; i < 10; i++) {
+    if (bitsCR[i]==0) { zero(); }
+    else { one(); }
+  }
+ 
+  delay(5000);
+}
+
+void one(){
+  delayMicroseconds(105);
+}
+void zero() {
+  delayMicroseconds(46);
+  fastDigitalToggle(PIN);
+  delayMicroseconds(20);
+  fastDigitalToggle(PIN);
+  delayMicroseconds(39);
+}
+void sendTX() {
+  fastDigitalWrite(PINTX, LOW);
+  delayMicroseconds(105);
+  fastDigitalToggle(PINTX);
+}
