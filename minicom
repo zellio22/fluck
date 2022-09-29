@@ -1,0 +1,3 @@
+liens https://linuxtrack.net/viewtopic.php?id=1272
+
+minicom -b 57600 -D /dev/ttyUSB0
